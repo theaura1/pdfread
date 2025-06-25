@@ -127,7 +127,7 @@ st.sidebar.header("🔧 Controls")
 uploaded_file = st.sidebar.file_uploader("Upload PDF", type="pdf", help="Max 200 MB")
 use_cache     = st.sidebar.checkbox("Cache docs & chain", value=True, help="Speeds up repeated runs")
 st.sidebar.markdown("---")
-st.sidebar.write("Built with OCI GenAI & Streamlit")
+st.sidebar.write("Built with OCI GenAI by Lavkesh")
 
 # ── MAIN CONTENT ─────────────────────────────────────────────────────────────────
 st.markdown("# 📄 Ask Your PDF")

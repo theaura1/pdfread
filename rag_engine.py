@@ -43,7 +43,6 @@ client = oci.generative_ai_inference.GenerativeAiInferenceClient(
 EMBED_ID = st.secrets["OCI_EMBEDDINGS_MODEL_ID"]
 CHAT_ID  = st.secrets["OCI_TEXT_MODEL_ID"]
 
-── FORCE THE INFERENCE ENDPOINT ───────────────────────────────────────────────
 service_ep = os.getenv(
     "OCI_SERVICE_ENDPOINT",
     "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",

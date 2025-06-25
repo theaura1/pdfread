@@ -4,3 +4,4 @@ python-dotenv
 oci
 langchain
 faiss-cpu
+langchain-community

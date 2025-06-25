@@ -29,27 +29,28 @@ load_dotenv()
 # client = oci.generative_ai_inference.GenerativeAiInferenceClient(config)
 
 
+
 oci_config = {
     "user":        st.secrets["OCI_USER"],
     "fingerprint": st.secrets["OCI_FINGERPRINT"],
-    "key_content": st.secrets["OCI_KEY"],
+    "key_content": st.secrets["OCI_KEY"],   # full PEM in secrets
     "tenancy":     st.secrets["OCI_TENANCY"],
-    "region":      st.secrets["OCI_REGION"],
+    "region":      st.secrets["OCI_REGION"],  # e.g. "us-chicago-1"
 }
 
+# ── create the Gen-AI client (pass dict directly) ────────────────────────────
+client = oci.generative_ai_inference.GenerativeAiInferenceClient(oci_config)
 
-client = oci.generative_ai_inference.GenerativeAiInferenceClient(
-    oci.config.from_dict(oci_config)
-)
-
-EMBED_ID = st.secrets["OCI_EMBEDDINGS_MODEL_ID"]
-CHAT_ID  = st.secrets["OCI_TEXT_MODEL_ID"]
-
+# ── optional: force the regional endpoint, same as quick_test.py ─────────────
 service_ep = os.getenv(
     "OCI_SERVICE_ENDPOINT",
-    "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
+    f"https://inference.generativeai.{oci_config['region']}.oci.oraclecloud.com",
 )
 client.base_client.endpoint = service_ep
+
+# ── model IDs from secrets ───────────────────────────────────────────────────
+EMBED_ID = st.secrets["OCI_EMBEDDINGS_MODEL_ID"]
+CHAT_ID  = st.secrets["OCI_TEXT_MODEL_ID"]
 
 # # ── MODEL IDS ──────────────────────────────────────────────────────────────────
 # EMBED_ID = os.getenv("OCI_EMBEDDINGS_MODEL_ID")      # e.g. cohere.embed-english-light or its OCID

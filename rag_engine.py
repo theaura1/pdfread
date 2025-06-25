@@ -20,22 +20,39 @@ from oci.generative_ai_inference.models import (
 # ── LOAD ENV & OCI CONFIG ─────────────────────────────────────────────────────
 load_dotenv()
 
-config = oci.config.from_file(
-    os.getenv("OCI_CONFIG_FILE", "./oci/config"),
-    profile_name=os.getenv("OCI_PROFILE", "DEFAULT"),
-)
-client = oci.generative_ai_inference.GenerativeAiInferenceClient(config)
+# config = oci.config.from_file(
+#     os.getenv("OCI_CONFIG_FILE", "./oci/config"),
+#     profile_name=os.getenv("OCI_PROFILE", "DEFAULT"),
+# )
+# client = oci.generative_ai_inference.GenerativeAiInferenceClient(config)
 
-# ── FORCE THE INFERENCE ENDPOINT ───────────────────────────────────────────────
+
+oci_config = {
+    "user":        st.secrets["OCI_USER"],
+    "fingerprint": st.secrets["OCI_FINGERPRINT"],
+    "key_content": st.secrets["OCI_KEY"],
+    "tenancy":     st.secrets["OCI_TENANCY"],
+    "region":      st.secrets["OCI_REGION"],
+}
+
+
+client = oci.generative_ai_inference.GenerativeAiInferenceClient(
+    oci.config.from_dict(oci_config)
+)
+
+EMBED_ID = st.secrets["OCI_EMBEDDINGS_MODEL_ID"]
+CHAT_ID  = st.secrets["OCI_TEXT_MODEL_ID"]
+
+── FORCE THE INFERENCE ENDPOINT ───────────────────────────────────────────────
 service_ep = os.getenv(
     "OCI_SERVICE_ENDPOINT",
     "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
 )
 client.base_client.endpoint = service_ep
 
-# ── MODEL IDS ──────────────────────────────────────────────────────────────────
-EMBED_ID = os.getenv("OCI_EMBEDDINGS_MODEL_ID")      # e.g. cohere.embed-english-light or its OCID
-CHAT_ID  = os.getenv("OCI_TEXT_MODEL_ID")            # e.g. cohere.command-light or its OCID
+# # ── MODEL IDS ──────────────────────────────────────────────────────────────────
+# EMBED_ID = os.getenv("OCI_EMBEDDINGS_MODEL_ID")      # e.g. cohere.embed-english-light or its OCID
+# CHAT_ID  = os.getenv("OCI_TEXT_MODEL_ID")            # e.g. cohere.command-light or its OCID
 
 # ── CUSTOM EMBEDDINGS USING OCI GEN AI ────────────────────────────────────────
 class OCIEmbeddings(Embeddings):

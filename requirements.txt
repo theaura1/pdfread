@@ -5,3 +5,4 @@ oci
 langchain
 faiss-cpu
 langchain-community
+pypdf

@@ -1,0 +1,6 @@
+streamlit
+streamlit-lottie
+python-dotenv
+oci
+langchain
+faiss-cpu

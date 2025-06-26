@@ -224,7 +224,7 @@ if mode.startswith("🤖"):
         st.markdown(f"**{who}:** {msg}")
 
     # wider button column: (9 : 2)  ≈ 82 % / 18 %
-    col_msg, col_btn = st.columns((5, 2), gap="small")
+    col_msg, col_btn = st.columns((7, 3), gap="small")
 
     with col_msg:
         user_msg = st.text_input("Your message", key="chat_input")

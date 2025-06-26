@@ -252,7 +252,7 @@ if mode.startswith("🤖"):
         user_msg = st.text_input("Your message", key="chat_input")
     
     with col_btn:
-        st.markdown('<div class="send-btn-container" style="padding-top:10px">', 
+        st.markdown('<div class="send-btn-container" style="padding-top:1.5rem">', 
                     unsafe_allow_html=True)
         send_clicked = st.button("Send", key="send_btn_custom",
                                  use_container_width=True)   # ⬅️ stretch

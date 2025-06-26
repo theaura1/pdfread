@@ -234,7 +234,7 @@ if mode.startswith("🤖"):
         user_msg = st.text_input("Your message", key="chat_input")
 
     with col_btn:
-        st.markdown("<div style='padding-top: 2rem;'>", unsafe_allow_html=True)
+        st.markdown("<div style='padding-top: 2rem; width:10px'>", unsafe_allow_html=True)
         send_clicked = st.button("Send", key="send_btn")
         st.markdown("</div>", unsafe_allow_html=True)
 

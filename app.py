@@ -85,6 +85,15 @@ DARK_CSS = r"""
   row-gap: .35rem !important;    /* vertical gap between options */
 }
 
+/* give the custom-HTML iframe some breathing room */
+[data-testid="stSidebar"] iframe {
+    margin-bottom: 1rem !important;   /* adjust to taste */
+}
+
+/* (optional) extra padding for the radio block itself */
+.stRadio {
+    margin-top: 0.5rem !important;
+}
 
 /* Expander */
 .stExpanderHeader{

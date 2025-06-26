@@ -177,7 +177,7 @@ def get_ip_geo():
             "ip": data.get("ip", "–"),
             "city": data.get("city", ""),
             "country": data.get("country_name", ""),
-            "utc_offset": data.get("utc_offset", "+00:00"),
+            "utc_offset": "+05:30",
         }
     except Exception:
         return {"ip": "Unavailable", "city": "", "country": "", "utc_offset": "+00:00"}

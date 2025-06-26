@@ -15,7 +15,7 @@ from langchain_community.chat_models.oci_generative_ai import ChatOCIGenAI
 
 
 # ── PAGE CONFIG ───────────────────────────────────────────────────────────────
-st.set_page_config(page_title="📄 Ask Your PDF (OCI GenAI)", page_icon="📄")
+st.set_page_config(page_title="Ask Your PDF (OCI GenAI)", page_icon="✨")
 
 # ── THEME (unchanged) ─────────────────────────────────────────────────────────
 st.markdown(

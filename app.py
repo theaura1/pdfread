@@ -1,15 +1,18 @@
-import os, textwrap
+# app.py
+
+import os
 import streamlit as st
-from dotenv import load_dotenv
-import oci
+from rag_engine import load_and_prepare_docs, build_qa_chain
 
-from rag_engine import load_and_prepare_docs_from_multiple_pdfs, build_qa_chain
-from langchain_community.chat_models.oci_generative_ai import ChatOCIGenAI
+# ── PAGE CONFIG ────────────────────────────────────────────────────────────────
+st.set_page_config(
+    page_title="📄 Ask Your PDF (OCI GenAI)",
+    page_icon="📄",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 
-# ── PAGE CONFIG ───────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Ask Your PDF (OCI GenAI)", page_icon="✨")
-
-# (your CSS unchanged) ---------------------------------------------------------
+# ── GLOBAL DARK-THEME + ANIMATIONS ─────────────────────────────────────────────
 st.markdown(
     """
     <style>
@@ -119,115 +122,55 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── OCI CONFIG ────────────────────────────────────────────────────────────────
-load_dotenv()
-CFG_FILE   = os.getenv("OCI_CONFIG_FILE", "./oci/config")
-CFG_PROF   = os.getenv("OCI_PROFILE", "DEFAULT")
-SERVICE_EP = os.getenv("OCI_SERVICE_ENDPOINT")
-CHAT_ID    = os.getenv("OCI_TEXT_MODEL_ID")
-TENANCY_ID = oci.config.from_file(CFG_FILE, profile_name=CFG_PROF)["tenancy"]
+# ── SIDEBAR ─────────────────────────────────────────────────────────────────────
+st.sidebar.header("🔧 Controls")
+uploaded_file = st.sidebar.file_uploader("Upload PDF", type="pdf", help="Max 200 MB")
+use_cache     = st.sidebar.checkbox("Cache docs & chain", value=True, help="Speeds up repeated runs")
+st.sidebar.markdown("---")
+st.sidebar.write("Built with OCI GenAI by Lavkesh")
 
-@st.cache_resource(show_spinner=False)
-def get_llm():
-    return ChatOCIGenAI(
-        model_id=CHAT_ID,
-        service_endpoint=SERVICE_EP,
-        compartment_id=TENANCY_ID,
-        auth_file_location=CFG_FILE,
-        auth_profile=CFG_PROF,
-        model_kwargs={"temperature": 0.3, "max_tokens": 768},
-        is_stream=False,
-    )
+# ── MAIN CONTENT ─────────────────────────────────────────────────────────────────
+st.markdown("# 📄 Ask Your PDF")
+st.write("Upload a PDF in the sidebar, then ask any question about its contents.")
 
-LLM = get_llm()
+if uploaded_file:
+    # Save locally
+    os.makedirs("data", exist_ok=True)
+    pdf_path = os.path.join("data", uploaded_file.name)
+    with open(pdf_path, "wb") as f:
+        f.write(uploaded_file.getvalue())
+    st.success(f"✅ `{uploaded_file.name}` uploaded!")
 
-def ask_llm(prompt: str) -> str:
-    try:
-        return LLM.predict(prompt).strip()
-    except Exception as e:
-        st.error(f"⚠️ Gen AI error: {e}")
-        return ""
+    # Load & split
+    if use_cache:
+        @st.cache_data(ttl=3600, show_spinner=False)
+        def _prepare(path): return load_and_prepare_docs(path)
+        docs = _prepare(pdf_path)
+    else:
+        docs = load_and_prepare_docs(pdf_path)
 
-def translate(text, lang):
-    if lang in ("None", "English"): return text
-    return ask_llm(f"Translate into {lang}:\n\n{text}")
+    # Build or reuse chain
+    if use_cache:
+        @st.cache_resource(show_spinner=False)
+        def _chain(docs): return build_qa_chain(docs)
+        qa = _chain(docs)
+    else:
+        qa = build_qa_chain(docs)
 
-def summarise(docs):
-    corpus = " ".join(d.page_content for d in docs)[:1000]
-    return ask_llm("Give a ~200-word summary:\n\n" + corpus)
+    # Question & display
+    query = st.text_input("💬 Your question:")
+    if query:
+        with st.spinner("Thinking…"):
+            res = qa(query)
 
-def easify(text):
-    short = text[:1000]
-    return ask_llm("Explain like I'm 5 in simple words:\n\n" + short)
+        st.markdown("### 📝 Answer")
+        st.markdown(f'<div class="answer-box">{res["result"]}</div>', unsafe_allow_html=True)
 
-# ── SIDEBAR ────────────────────────────────────────────────────────────────────
-st.sidebar.header("Controls")
-files = st.sidebar.file_uploader("Upload PDFs", ["pdf"], accept_multiple_files=True)
-lang  = st.sidebar.selectbox("Translate to", ["None","English","Hindi","Tamil","French"], 0)
+        with st.expander("📑 Show source snippets"):
+            for src in res["source_documents"]:
+                pg = src.metadata.get("page", "?")
+                snippet = src.page_content.replace("\n", " ")[:200]
+                st.write(f"• **Page {pg}** — _{snippet}…_")
 
-# ── SESSION -------------------------------------------------------------------
-if "txt" not in st.session_state:
-    st.session_state.txt    = None
-    st.session_state.title  = None
-    st.session_state.snips  = None   # store snippets only for Q-A
-
-# ── MAIN ----------------------------------------------------------------------
-st.title("📄 Ask Your PDF")
-if not files:
-    st.info("Upload PDFs first.")
-    st.stop()
-
-paths = []
-os.makedirs("data", exist_ok=True)
-for f in files:
-    p = os.path.join("data", f.name)
-    with open(p,"wb") as o: o.write(f.getvalue())
-    paths.append(p)
-
-docs = load_and_prepare_docs_from_multiple_pdfs(paths)
-qa   = build_qa_chain(docs)
-
-# action buttons
-col1, col2 = st.columns(2)
-if col1.button("📝 Summarise PDFs"):
-    with st.spinner("Summarising…"):
-        st.session_state.txt   = summarise(docs)
-        st.session_state.title = "Summary"
-        st.session_state.snips = None
-
-question = st.text_input("Ask a question:")
-if question:
-    with st.spinner("Answering…"):
-        res = qa(question)
-    st.session_state.txt   = res["result"]
-    st.session_state.title = "Answer"
-    st.session_state.snips = res["source_documents"]
-
-# show current text
-if st.session_state.txt:
-    st.subheader(st.session_state.title)
-    st.markdown(f"<div class='answer-box'>{st.session_state.txt}</div>", unsafe_allow_html=True)
-
-    if st.button("🧸 Easify this"):
-        with st.spinner("Simplifying…"):
-            st.session_state.txt = easify(st.session_state.txt)
-            st.session_state.title = "Explained Easily"
-            st.session_state.snips = None
-        # Immediately display the new simpler text
-        st.subheader(st.session_state.title)
-        st.markdown(f"<div class='answer-box'>{st.session_state.txt}</div>", unsafe_allow_html=True)
-
-    # translation (always based on current displayed text)
-    trans = translate(st.session_state.txt, lang)
-    if trans != st.session_state.txt:
-        st.subheader(f"Translated ({lang})")
-        st.markdown(f"<div class='answer-box'>{trans}</div>", unsafe_allow_html=True)
-
-    # source snippets only for Q-A
-    if st.session_state.snips:
-        with st.expander("Source snippets"):
-            for s in st.session_state.snips:
-                pg   = s.metadata.get("page","?")
-                name = s.metadata.get("source","doc")
-                snip = textwrap.shorten(s.page_content.replace("\n"," "), 150)
-                st.write(f"• **{name} – page {pg}** — _{snip}_")
+else:
+    st.info("📥 Please upload a PDF from the sidebar to begin.")

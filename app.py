@@ -213,37 +213,41 @@ st.title("📄 Ask Your PDF" if mode.startswith("📄") else "🤖 Chat with AI"
 
 # -----------------------------------------------------------------
 # ── CHAT WITH AI MODE ───────────────────────────────────────────
+# ── CHAT WITH AI MODE ───────────────────────────────────────────
 if mode.startswith("🤖"):
 
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
-    # ── show chat history
+    # show chat history
     for who, msg in st.session_state.chat:
         st.markdown(f"**{who}:** {msg}")
 
-    # 🔸 CHANGE 1:  use a tighter column ratio (10 : 1) and small gap
-    col_msg, col_btn = st.columns((10, 1), gap="small")
+    # wider button column: (9 : 2)  ≈ 82 % / 18 %
+    col_msg, col_btn = st.columns((9, 2), gap="small")
 
-    # text box sits in the wider column
-    user_msg = col_msg.text_input("Your message", key="chat_input")
+    with col_msg:
+        user_msg = st.text_input("Your message", key="chat_input")
 
-    # 🔸 CHANGE 2:  stretch the button to fill its column
-    send_clicked = col_btn.button("Send", key="send_btn",
-                                  use_container_width=True)
+    with col_btn:
+        send_clicked = st.button(
+            "Send",
+            key="send_btn",
+            use_container_width=True  # stretch to fill column
+        )
 
-    # ------------------ handle send ------------------
+    # handle send
     if send_clicked and user_msg.strip():
         with st.spinner("AI is typing…"):
             reply = ask_llm(user_msg.strip())
         st.session_state.chat.extend([("You", user_msg.strip()), ("AI", reply)])
 
-        # clear the input then rerun
-        if "chat_input" in st.session_state:
-            del st.session_state["chat_input"]
+        # clear the box then rerun for a smooth chat loop
+        del st.session_state["chat_input"]
         (st.rerun if hasattr(st, "rerun") else st.experimental_rerun)()
 
-    st.stop()   # ← prevent PDF code from executing
+    st.stop()  # don’t execute PDF logic below
+
 
 # -----------------------------------------------------------------
 # PDF ASSISTANT MODE

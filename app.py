@@ -34,6 +34,14 @@ DARK_CSS = r"""
 /* Main width */
 .block-container{max-width:850px;padding:2rem 1rem}
 
+
+.stButton > button {
+    white-space: nowrap;
+    padding: 0.45rem 1.2rem !important;
+    display: block;
+    margin: auto;  /* center button inside its column */
+}
+
 /* Title */
 .stMarkdown h1{
   font-size:3rem;font-weight:800;text-align:center;margin-bottom:.3rem;

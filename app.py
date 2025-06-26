@@ -34,31 +34,23 @@ DARK_CSS = r"""
 /* Main width */
 .block-container{max-width:850px;padding:2rem 1rem}
 
-/* only the Send button */
+/* only this Send button */
 .send-btn-container button {
-    white-space: nowrap;
+    white-space: nowrap;        /* never wrap */
+    min-width: 110px;           /* just a safety floor */
     padding: 0.45rem 1.2rem !important;
-
-    /*  ── add one of these two lines ── */
-    /* OPTION A: fixed size */
-    width: 110px !important;          /* pick any value ≥ 90 px */
-    /* OPTION B: fill its column
-    width: 100% !important;
-    max-width: 160px;                 /* keeps it from growing huge */
-    */
-
     margin-top: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-
-    background: linear-gradient(90deg, #ff6ec4, #7373ff) !important;
-    border: none !important;
-    border-radius: 12px !important;
-    font-weight: 600 !important;
-    color: white !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    transition: all 0.2s ease-in-out;
+    background: linear-gradient(90deg,#ff6ec4,#7373ff)!important;
+    border: none!important;
+    border-radius: 12px!important;
+    font-weight: 600!important;
+    color: #fff!important;
+    box-shadow: 0 4px 15px rgba(0,0,0,.4);
+    transition: transform .2s, box-shadow .2s;
+}
+.send-btn-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.6);
 }
 
 
@@ -254,14 +246,16 @@ if mode.startswith("🤖"):
         st.markdown(f"**{who}:** {msg}")
 
     # ✔️ Better layout: 90% + 10% split with padding
-    col_msg, col_btn = st.columns((10, 1), gap="small")
+    col_msg, col_btn = st.columns((9, 2), gap="small")   # 9 : 2  ≈ 82 % / 18 %
 
     with col_msg:
         user_msg = st.text_input("Your message", key="chat_input")
-
+    
     with col_btn:
-        st.markdown('<div class="send-btn-container">', unsafe_allow_html=True)
-        send_clicked = st.button("Send", key="send_btn_custom")
+        st.markdown('<div class="send-btn-container" style="padding-top:10px">', 
+                    unsafe_allow_html=True)
+        send_clicked = st.button("Send", key="send_btn_custom",
+                                 use_container_width=True)   # ⬅️ stretch
         st.markdown('</div>', unsafe_allow_html=True)
 
     if send_clicked and user_msg.strip():

@@ -165,6 +165,7 @@ def get_ip_geo():
 # ─────────────────────────────────────────────────────────────
 geo = get_ip_geo()
 with st.sidebar:
+    # 1) bump the iframe height from 90 → 110 px (adds ~20 px blank space)
     components.html(
         f"""
         <div style="font-family:Inter,sans-serif;font-weight:50;color:#e0e0e0;">
@@ -181,9 +182,13 @@ with st.sidebar:
           tick(); setInterval(tick,1000);
         </script>
         """,
-        height=90,
+        height=110,          # <── increased from 90
     )
 
+    # 2) optional extra spacer (≈ 12–14 px)
+    st.markdown("<div style='height:0.8rem'></div>", unsafe_allow_html=True)
+
+# rest of the sidebar widgets
 mode = st.sidebar.radio(
     "Choose mode",
     ["📄 PDF Assistant", "🤖 Chat with AI"],
@@ -191,6 +196,7 @@ mode = st.sidebar.radio(
     index=0,
 )
 st.sidebar.markdown("---")
+
 
 # ─────────────────────────────────────────────────────────────
 # SESSION STATE

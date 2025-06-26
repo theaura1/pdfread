@@ -65,6 +65,27 @@ DARK_CSS = r"""
 }
 .stButton > button:hover{transform:translateY(-2px)!important;box-shadow:0 6px 20px rgba(0,0,0,.6)!important}
 
+/* ░░░ your existing dark-theme CSS (unchanged) ░░░ */
+
+/* ───── NEW: breathing-room tweaks ───── */
+
+/* add gap after the IP/geo block */
+[data-testid="stSidebar"] > div:first-child {
+  margin-bottom: 1rem;           /* ≈16 px – tweak as you like */
+}
+
+/* space above and below the whole radio selector */
+.stRadio {
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* optional: loosen the two radio choices a bit */
+.stRadio > div {
+  row-gap: .35rem !important;    /* vertical gap between options */
+}
+
+
 /* Expander */
 .stExpanderHeader{
   background:rgba(42,42,63,.7)!important;border:1px solid #444!important;border-radius:8px!important;

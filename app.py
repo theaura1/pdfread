@@ -34,14 +34,24 @@ DARK_CSS = r"""
 /* Main width */
 .block-container{max-width:850px;padding:2rem 1rem}
 
+/* only the Send button */
 .send-btn-container button {
     white-space: nowrap;
     padding: 0.45rem 1.2rem !important;
-    min-width: 90px;
+
+    /*  ── add one of these two lines ── */
+    /* OPTION A: fixed size */
+    width: 110px !important;          /* pick any value ≥ 90 px */
+    /* OPTION B: fill its column
+    width: 100% !important;
+    max-width: 160px;                 /* keeps it from growing huge */
+    */
+
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
     display: block;
+
     background: linear-gradient(90deg, #ff6ec4, #7373ff) !important;
     border: none !important;
     border-radius: 12px !important;
@@ -51,10 +61,6 @@ DARK_CSS = r"""
     transition: all 0.2s ease-in-out;
 }
 
-.send-btn-container button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-}
 
 
 

@@ -36,14 +36,13 @@ DARK_CSS = r"""
 
 
 .stButton > button {
-    margin-top: 6px !important;       /* adjust as needed */
     white-space: nowrap;
     padding: 0.45rem 1.2rem !important;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: -100px !important;
 }
+
 
 /* Title */
 .stMarkdown h1{

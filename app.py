@@ -170,7 +170,7 @@ with st.sidebar:
         <div style="font-family:Inter,sans-serif;font-weight:50;color:#e0e0e0;">
           <div style="margin-bottom:4px">🌐 Your IP: <span style="color:#12c26a;">{geo['ip']}</span></div>
           <div style="margin-bottom:4px">📍 Location: {geo['city']} {geo['country']}</div>
-          <div style="margin-bottom:0">🕒 Current time: <span id='liveclock'></span></div>
+          <div style="margin-bottom:4px">🕒 Current time: <span id='liveclock'></span></div>
         </div>
         <script>
           function tick(){{

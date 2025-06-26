@@ -42,7 +42,7 @@ DARK_CSS = r"""
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: -1rem;
+    margin-bottom: -100px !important;
 }
 
 /* Title */

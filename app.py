@@ -223,30 +223,25 @@ if mode.startswith("🤖"):
     for who, msg in st.session_state.chat:
         st.markdown(f"**{who}:** {msg}")
 
-    # wider button column: (9 : 2)  ≈ 82 % / 18 %
-    col_msg, col_btn = st.columns((9, 3), gap="small")
+    # ✔️ Better layout: 90% + 10% split with padding
+    col_msg, col_btn = st.columns((10, 1), gap="small")
 
     with col_msg:
         user_msg = st.text_input("Your message", key="chat_input")
 
     with col_btn:
-        send_clicked = st.button(
-            "Send",
-            key="send_btn",
-            use_container_width=True  # stretch to fill column
-        )
+        send_clicked = st.button("Send", key="send_btn")  # ⛔ no use_container_width
 
-    # handle send
     if send_clicked and user_msg.strip():
         with st.spinner("AI is typing…"):
             reply = ask_llm(user_msg.strip())
         st.session_state.chat.extend([("You", user_msg.strip()), ("AI", reply)])
 
-        # clear the box then rerun for a smooth chat loop
         del st.session_state["chat_input"]
         (st.rerun if hasattr(st, "rerun") else st.experimental_rerun)()
 
-    st.stop()  # don’t execute PDF logic below
+    st.stop()
+
 
 
 # -----------------------------------------------------------------

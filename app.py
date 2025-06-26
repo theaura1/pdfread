@@ -240,7 +240,10 @@ if mode.startswith("🤖"):
         user_msg = st.text_input("Your message", key="chat_input")
 
     with col_btn:
-        send_clicked = st.button("Send", key="send_btn")  # ⛔ no use_container_width
+        st.markdown("<div style='padding-top: 10px;'>", unsafe_allow_html=True)
+        send_clicked = st.button("Send", key="send_btn")
+        st.markdown("</div>", unsafe_allow_html=True)
+
 
     if send_clicked and user_msg.strip():
         with st.spinner("AI is typing…"):

@@ -248,7 +248,11 @@ if mode.startswith("🤖"):
             <div class="send-btn-wrapper" style="padding-top: 10px;">
         """, unsafe_allow_html=True)
     
-        send_clicked = st.button("Send", key="send_btn")
+        send_clicked = st.markdown("""
+            <form action="#" method="post">
+                <button type="submit" class="send-custom-btn">Send</button>
+            </form>
+        """, unsafe_allow_html=True)
     
         st.markdown("</div>", unsafe_allow_html=True)
 

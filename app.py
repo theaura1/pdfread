@@ -34,6 +34,16 @@ DARK_CSS = r"""
 /* Main width */
 .block-container{max-width:850px;padding:2rem 1rem}
 
+/* ONLY target the Send button inside .send-btn-wrapper */
+.send-btn-wrapper button {
+    white-space: nowrap;
+    padding: 0.45rem 1.2rem !important;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    min-width: 90px;           /* wider but not full width */
+    text-align: center;
+}
 
 
 

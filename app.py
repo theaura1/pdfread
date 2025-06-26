@@ -35,13 +35,7 @@ DARK_CSS = r"""
 .block-container{max-width:850px;padding:2rem 1rem}
 
 
-.stButton > button {
-    white-space: nowrap;
-    padding: 0.45rem 1.2rem !important;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
+
 
 
 /* Title */

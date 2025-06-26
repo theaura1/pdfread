@@ -253,7 +253,7 @@ if mode.startswith("🤖"):
 
     with col_btn:
         st.markdown("""
-            <div class="send-btn-wrapper" style="padding-top: 2rem;">
+            <div class="send-btn-wrapper" style="padding-top: 1rem;">
         """, unsafe_allow_html=True)
     
         send_clicked = st.markdown("""

@@ -212,28 +212,38 @@ if "chat"  not in st.session_state: st.session_state.chat  = []
 st.title("📄 Ask Your PDF" if mode.startswith("📄") else "🤖 Chat with AI")
 
 # -----------------------------------------------------------------
-# CHAT WITH AI MODE
-# -----------------------------------------------------------------
+# ── CHAT WITH AI MODE ───────────────────────────────────────────
 if mode.startswith("🤖"):
 
-    # display history
+    if "chat" not in st.session_state:
+        st.session_state.chat = []
+
+    # ── show chat history
     for who, msg in st.session_state.chat:
         st.markdown(f"**{who}:** {msg}")
 
-    col_msg, col_btn = st.columns([4, 1])
+    # 🔸 CHANGE 1:  use a tighter column ratio (10 : 1) and small gap
+    col_msg, col_btn = st.columns((10, 1), gap="small")
+
+    # text box sits in the wider column
     user_msg = col_msg.text_input("Your message", key="chat_input")
 
-    if col_btn.button("Send", key="send_btn") and user_msg.strip():
+    # 🔸 CHANGE 2:  stretch the button to fill its column
+    send_clicked = col_btn.button("Send", key="send_btn",
+                                  use_container_width=True)
+
+    # ------------------ handle send ------------------
+    if send_clicked and user_msg.strip():
         with st.spinner("AI is typing…"):
             reply = ask_llm(user_msg.strip())
         st.session_state.chat.extend([("You", user_msg.strip()), ("AI", reply)])
 
-        # clear input + rerun
+        # clear the input then rerun
         if "chat_input" in st.session_state:
             del st.session_state["chat_input"]
         (st.rerun if hasattr(st, "rerun") else st.experimental_rerun)()
 
-    st.stop()  # prevent PDF logic from running
+    st.stop()   # ← prevent PDF code from executing
 
 # -----------------------------------------------------------------
 # PDF ASSISTANT MODE

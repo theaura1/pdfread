@@ -16,116 +16,82 @@ from langchain_community.chat_models.oci_generative_ai import ChatOCIGenAI
 
 # ── PAGE CONFIG ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Ask Your PDF (OCI GenAI)", page_icon="✨")
+# --- DARK THEME CSS -----------------------------------------------------------
+DARK_CSS = r"""
+<style>
+/* Import a crisp sans-serif font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-# ── THEME (unchanged) ─────────────────────────────────────────────────────────
-st.markdown(
-    """
-    <style>
-    /* Import a crisp sans-serif */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+/* Animate the page background through multiple shades */
+[data-testid="stAppViewContainer"]{
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(-45deg,#1a1a2e,#0f0f1e,#1f1f39,#0f0f1e);
+  background-size:400% 400%;
+  animation:gradientBG 20s ease infinite;
+  color:#e0e0e0;
+}
+@keyframes gradientBG{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
 
-    /* Animate the page background through multiple shades */
-    [data-testid="stAppViewContainer"] {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(-45deg, #1a1a2e, #0f0f1e, #1f1f39, #0f0f1e);
-      background-size: 400% 400%;
-      animation: gradientBG 20s ease infinite;
-      color: #e0e0e0;
-    }
-    @keyframes gradientBG {
-      0%   { background-position: 0%   50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0%   50%; }
-    }
+/* Sidebar styling */
+[data-testid="stSidebar"]{
+  background:rgba(26,26,46,0.95);
+  border-right:1px solid #333;
+}
 
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-      background: rgba(26, 26, 46, 0.95);
-      border-right: 1px solid #333;
-    }
+/* Constrain main container width */
+.block-container{max-width:850px;padding:2rem 1rem}
 
-    /* Constrain the main container width */
-    .block-container {
-      max-width: 850px;
-      padding: 2rem 1rem;
-    }
+/* Gradient-clipped title */
+.stMarkdown h1{
+  font-size:3rem;font-weight:800;text-align:center;margin-bottom:.3rem;
+  background:linear-gradient(90deg,#ff6ec4,#7373ff);
+  -webkit-background-clip:text;color:transparent;
+}
 
-    /* Gradient-clipped title */
-    .stMarkdown h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 0.3rem;
-      background: linear-gradient(90deg, #ff6ec4, #7373ff);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
+/* ANSWER BOX */
+.answer-box{
+  position:relative;background:rgba(42,42,63,.8);border:4px solid transparent;
+  border-radius:12px;padding:1.5rem;box-shadow:0 4px 30px rgba(0,0,0,.5);
+  animation:fadeIn .6s ease-out,rotateBorder 8s linear infinite;
+  --bdeg:0deg;border-image:linear-gradient(var(--bdeg),#ff6ec4,#7373ff,#18dcff) 1;
+  color:#f5f5f5;margin-bottom:1rem;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes rotateBorder{to{--bdeg:360deg}}
 
-    /* ANSWER BOX: rotating gradient BORDER, no overlay */
-    .answer-box {
-      position: relative;
-      background: rgba(42,42,63,0.8);
-      border: 4px solid transparent;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-      animation: fadeIn 0.6s ease-out, rotateBorder 8s linear infinite;
-      --bdeg: 0deg;
-      border-image: linear-gradient(var(--bdeg), #ff6ec4, #7373ff, #18dcff) 1;
-      color: #f5f5f5;
-      margin-bottom: 1rem;
-    }
+/* Text input */
+.stTextInput>label{color:#ddd!important}
+.stTextInput>div>input{
+  background:rgba(42,42,63,.7)!important;border:1px solid #555!important;
+  border-radius:8px!important;color:#e0e0e0!important;padding:.5rem 1rem!important;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes rotateBorder {
-      to { --bdeg: 360deg; }
-    }
+/* Buttons */
+.stButton>button{
+  background:linear-gradient(90deg,#ff6ec4,#7373ff)!important;border:none!important;
+  border-radius:8px!important;padding:.6rem 1.2rem!important;font-weight:600!important;
+  box-shadow:0 4px 15px rgba(0,0,0,.4)!important;
+  transition:transform .2s ease,box-shadow .2s ease!important;
+}
+.stButton>button:hover{
+  transform:translateY(-2px)!important;
+  box-shadow:0 6px 20px rgba(0,0,0,.6)!important;
+}
 
-    /* Text input styling */
-    .stTextInput > label {
-      color: #ddd !important;
-    }
-    .stTextInput > div > input {
-      background: rgba(42,42,63,0.7) !important;
-      border: 1px solid #555 !important;
-      border-radius: 8px !important;
-      color: #e0e0e0 !important;
-      padding: 0.5rem 1rem !important;
-    }
+/* Expander header */
+.stExpanderHeader{
+  background:rgba(42,42,63,.7)!important;border:1px solid #444!important;
+  border-radius:8px!important;padding:.5rem 1rem!important;color:#ddd!important;
+}
+.stExpanderHeader:hover{background:rgba(42,42,63,.9)!important}
+</style>
+"""
 
-    /* Button styling */
-    .stButton > button {
-      background: linear-gradient(90deg, #ff6ec4, #7373ff) !important;
-      border: none !important;
-      border-radius: 8px !important;
-      padding: 0.6rem 1.2rem !important;
-      font-weight: 600 !important;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
-      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-    }
-    .stButton > button:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6) !important;
-    }
-
-    /* Expander styling */
-    .stExpanderHeader {
-      background: rgba(42,42,63,0.7) !important;
-      border: 1px solid #444 !important;
-      border-radius: 8px !important;
-      padding: 0.5rem 1rem !important;
-      color: #ddd !important;
-    }
-    .stExpanderHeader:hover {
-      background: rgba(42,42,63,0.9) !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown(DARK_CSS, unsafe_allow_html=True)
 
 
 # ── LLM (cached once) ─────────────────────────────────────────────────────────

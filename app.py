@@ -34,15 +34,23 @@ DARK_CSS = r"""
 /* Main width */
 .block-container{max-width:850px;padding:2rem 1rem}
 
-/* ONLY target the Send button inside .send-btn-wrapper */
-.send-btn-wrapper button {
-    white-space: nowrap;
-    padding: 0.45rem 1.2rem !important;
-    margin-left: auto;
-    margin-right: auto;
+.send-custom-btn {
+    background: linear-gradient(90deg, #ff6ec4, #7373ff);
+    border: none;
+    color: white;
+    font-weight: 500;
+    border-radius: 12px;
+    padding: 0.45rem 1.2rem;
+    min-width: 90px;
     margin-top: 10px;
-    min-width: 90px;           /* wider but not full width */
-    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: all 0.2s ease-in-out;
+}
+
+.send-custom-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
 }
 
 
@@ -245,7 +253,7 @@ if mode.startswith("🤖"):
 
     with col_btn:
         st.markdown("""
-            <div class="send-btn-wrapper" style="padding-top: 10px;">
+            <div class="send-btn-wrapper" style="padding-top: 2rem;">
         """, unsafe_allow_html=True)
     
         send_clicked = st.markdown("""
